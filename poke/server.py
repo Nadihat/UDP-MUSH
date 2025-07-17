@@ -460,6 +460,37 @@ def handle_client_message(address, message, server_socket):
         else:
             server_socket.sendto("Pet what? Usage: /pet <pokemon>".encode(), address)
 
+    elif command == '/feed':
+        if args:
+            target_name = " ".join(args)
+            
+            # Feed own pokemon
+            my_pokemon = client_pokemon.get(address)
+            if my_pokemon and my_pokemon['name'].lower() == target_name.lower():
+                server_socket.sendto(f"You feed your {my_pokemon['name']}. It seems to enjoy the treat!".encode(), address)
+                broadcast_to_room(f"--- {nickname} feeds their {my_pokemon['name']}. ---", current_room_id, server_socket, exclude_address=address)
+                return
+
+            # Feed other player's pokemon
+            for addr, name in client_nicknames.items():
+                if client_locations.get(addr) == current_room_id and addr != address:
+                    if addr in following_pokemon and following_pokemon[addr]['name'].lower() == target_name.lower():
+                        server_socket.sendto(f"You feed {name}'s {following_pokemon[addr]['name']}. It gobbles it up happily!".encode(), address)
+                        broadcast_to_room(f"--- {nickname} feeds {name}'s {following_pokemon[addr]['name']}. ---", current_room_id, server_socket, exclude_address=address)
+                        return
+
+            # Feed wild pokemon
+            if current_room_id in pokemon['wild']:
+                for p in pokemon['wild'][current_room_id]:
+                    if p['name'].lower() == target_name.lower():
+                        server_socket.sendto(f"You feed the wild {p['name']}. It cautiously takes the food from your hand.".encode(), address)
+                        broadcast_to_room(f"--- {nickname} feeds a wild {p['name']}. ---", current_room_id, server_socket, exclude_address=address)
+                        return
+            
+            server_socket.sendto(f"You don't see a {target_name} to feed here.".encode(), address)
+        else:
+            server_socket.sendto("Feed what? Usage: /feed <pokemon>".encode(), address)
+
     elif command == '/regions':
         region_list = "\n".join([f"- {name.capitalize()}" for name in regions.keys()])
         server_socket.sendto(f"Available regions:\n{region_list}".encode(), address)
@@ -473,6 +504,7 @@ def handle_client_message(address, message, server_socket):
 /follow - Have your pokemon follow you.
 /unfollow - Have your pokemon stop following you.
 /pet <pokemon> - Pet a pokemon.
+/feed <pokemon> - Feed a pokemon.
 /regions - List available Pokemon regions.
 /emote <action> - Perform an action.
 /smile - Smile at everyone in the room.
