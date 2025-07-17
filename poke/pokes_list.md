@@ -24,6 +24,10 @@
 - Bidoof
 - Starly
 
+### Route 201
+- Bidoof
+- Starly
+
 ### Icy Sea
 - Finneon
 - Lumineon

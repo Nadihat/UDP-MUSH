@@ -47,9 +47,7 @@ def main():
                 client_socket.sendto(f"/exit {nickname}".encode(), (SERVER_HOST, SERVER_PORT))
                 break
 
-            if message.lower() == '/help':
-                print("Commands:\n/look - See the room description, items, and exits.\n/lookat <item or person> - Look at an item or a person to get a description.\n/sit <item> - Sit on an item.\n/go <direction> - Move to another room.\n/follow - Have your pokemon follow you.\n/unfollow - Have your pokemon stop following you.\n/regions - List available Pokemon regions.\n/emote <action> - Perform an action.\n/smile - Smile at everyone in the room.\n/exit or /quit - Disconnect from the server.")
-                continue
+            if message.lower() == '/help':                print("Commands:\n/look - See the room description, items, and exits.\n/lookat <item or person> - Look at an item or a person to get a description.\n/sit <item> - Sit on an item.\n/go <direction> - Move to another room.\n/follow - Have your pokemon follow you.\n/unfollow - Have your pokemon stop following you.\n/pet <pokemon> - Pet a pokemon.\n/regions - List available Pokemon regions.\n/emote <action> - Perform an action.\n/smile - Smile at everyone in the room.\n/exit or /quit - Disconnect from the server.")                continue
             # Send the raw message to the server
             if message.startswith('/'):
                 # For commands, we send the command and nickname, and any arguments

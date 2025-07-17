@@ -34,6 +34,10 @@ pokemon = {
             {'name': 'Bidoof', 'type': 'Normal', 'moves': ['Tackle', 'Growl']},
             {'name': 'Starly', 'type': 'Normal/Flying', 'moves': ['Tackle', 'Quick Attack']}
         ],
+        'route_201': [
+            {'name': 'Bidoof', 'type': 'Normal', 'moves': ['Tackle', 'Growl']},
+            {'name': 'Starly', 'type': 'Normal/Flying', 'moves': ['Tackle', 'Quick Attack']}
+        ],
         'icy_sea': [
             {'name': 'Finneon', 'type': 'Water', 'moves': ['Pound', 'Water Gun']},
             {'name': 'Lumineon', 'type': 'Water', 'moves': ['Pound', 'Water Gun']},
@@ -98,10 +102,31 @@ rooms = {
     },
     'sinnoh_ruins': {
         'name': 'Ruins to Sinnoh',
-        'description': 'You are in a set of ancient ruins. A path to the north leads to the Sinnoh region. The prairie is to the south.',
+        'description': 'You are in a set of ancient ruins. A path to the north leads to Twinleaf Town. The prairie is to the south.',
         'items': {},
         'sitting_users': {},
-        'exits': {'north': 'sinnoh', 'south': 'prairie'}
+        'exits': {'north': 'twinleaf_town', 'south': 'prairie'}
+    },
+    'twinleaf_town': {
+        'name': 'Twinleaf Town',
+        'description': 'You are in Twinleaf Town, a small, peaceful town where the fresh scent of leaves hangs in the air. To the south are the Sinnoh Ruins, and to the north is Route 201.',
+        'items': {},
+        'sitting_users': {},
+        'exits': {'south': 'sinnoh_ruins', 'north': 'route_201'}
+    },
+    'route_201': {
+        'name': 'Route 201',
+        'description': 'You are on Route 201, a path that winds through the lush greenery of Sinnoh. To the south is Twinleaf Town, and to the west is Lake Verity.',
+        'items': {},
+        'sitting_users': {},
+        'exits': {'south': 'twinleaf_town', 'west': 'lake_verity'}
+    },
+    'lake_verity': {
+        'name': 'Lake Verity',
+        'description': 'You have arrived at Lake Verity, a place of serene beauty. The crystal-clear water of the lake reflects the sky like a mirror. A path to the east leads back to Route 201.',
+        'items': {},
+        'sitting_users': {},
+        'exits': {'east': 'route_201'}
     },
     'kitchen': {
         'name': 'Kitchen',
@@ -404,6 +429,37 @@ def handle_client_message(address, message, server_socket):
         else:
             server_socket.sendto("You don't have a pokemon following you.".encode(), address)
 
+    elif command == '/pet':
+        if args:
+            target_name = " ".join(args)
+            
+            # Pet own pokemon
+            my_pokemon = client_pokemon.get(address)
+            if my_pokemon and my_pokemon['name'].lower() == target_name.lower():
+                server_socket.sendto(f"You pet your {my_pokemon['name']}. It seems happy!".encode(), address)
+                broadcast_to_room(f"--- {nickname} pets their {my_pokemon['name']}. ---", current_room_id, server_socket, exclude_address=address)
+                return
+
+            # Pet other player's pokemon
+            for addr, name in client_nicknames.items():
+                if client_locations.get(addr) == current_room_id and addr != address:
+                    if addr in following_pokemon and following_pokemon[addr]['name'].lower() == target_name.lower():
+                        server_socket.sendto(f"You pet {name}'s {following_pokemon[addr]['name']}. It seems to like it!".encode(), address)
+                        broadcast_to_room(f"--- {nickname} pets {name}'s {following_pokemon[addr]['name']}. ---", current_room_id, server_socket, exclude_address=address)
+                        return
+
+            # Pet wild pokemon
+            if current_room_id in pokemon['wild']:
+                for p in pokemon['wild'][current_room_id]:
+                    if p['name'].lower() == target_name.lower():
+                        server_socket.sendto(f"You pet the wild {p['name']}. It seems friendly.".encode(), address)
+                        broadcast_to_room(f"--- {nickname} pets a wild {p['name']}. ---", current_room_id, server_socket, exclude_address=address)
+                        return
+            
+            server_socket.sendto(f"You don't see a {target_name} to pet here.".encode(), address)
+        else:
+            server_socket.sendto("Pet what? Usage: /pet <pokemon>".encode(), address)
+
     elif command == '/regions':
         region_list = "\n".join([f"- {name.capitalize()}" for name in regions.keys()])
         server_socket.sendto(f"Available regions:\n{region_list}".encode(), address)
@@ -416,6 +472,7 @@ def handle_client_message(address, message, server_socket):
 /go <direction> - Move to another room.
 /follow - Have your pokemon follow you.
 /unfollow - Have your pokemon stop following you.
+/pet <pokemon> - Pet a pokemon.
 /regions - List available Pokemon regions.
 /emote <action> - Perform an action.
 /smile - Smile at everyone in the room.
