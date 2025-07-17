@@ -6,6 +6,7 @@ PORT = 12345
 
 # Game state
 clients = set()
+client_nicknames = {} # Maps address to nickname
 client_locations = {}  # Maps address to room_id
 rooms = {
     'living_room': {
@@ -148,10 +149,20 @@ def handle_client_message(address, message, server_socket):
 
     # The client sends commands in the format: /command [args...] <nickname>
     # Regular chat messages are sent as: <nickname>: <message>
+    # Special case for the initial join message
+    if message.endswith(" has joined the chat ---"):
+        # Extract nickname from "--- <nickname> has joined the chat ---"
+        nickname = message.split("--- ")[1].split(" has joined")[0]
+        client_nicknames[address] = nickname
+        broadcast_to_room(message, current_room_id, exclude_address=address)
+        return
+
     if command.startswith('/'):
         # For commands, the nickname is the last element
         nickname = parts[-1]
         args = parts[1:-1]
+        if address not in client_nicknames:
+             client_nicknames[address] = nickname
     else:
         # This is a regular chat message, broadcast it directly
         broadcast_to_room(message, current_room_id)
@@ -169,22 +180,48 @@ def handle_client_message(address, message, server_socket):
             else:
                 item_descriptions.append(item)
         
+        other_people = [name for addr, name in client_nicknames.items() if client_locations.get(addr) == current_room_id and addr != address]
+        people_description = ""
+        if other_people:
+            people_description = f"\nPeople here: {', '.join(other_people)}."
+
         item_list = ", ".join(item_descriptions)
         exit_list = ", ".join(current_room['exits'].keys())
-        look_response = f"You see: {item_list}.\nExits are: {exit_list}."
+        look_response = f"You see: {item_list}.\nExits are: {exit_list}.{people_description}"
         server_socket.sendto(look_response.encode(), address)
 
     elif command == '/lookat':
         if args:
             target_name = " ".join(args)
+            
+            if target_name == 'me':
+                server_socket.sendto(f"You see yourself, {nickname}. You look great!".encode(), address)
+                return
+
+            # Check if looking at an item
             target_item = f"a {target_name}"
             if target_item in current_room['items']:
                 description = current_room['items'][target_item]
                 server_socket.sendto(description.encode(), address)
+                return
+
+            # Check if looking at another player
+            target_addr = None
+            for addr, name in client_nicknames.items():
+                if name.lower() == target_name.lower() and client_locations.get(addr) == current_room_id:
+                    target_addr = addr
+                    break
+            
+            if target_addr:
+                if target_addr == address: # Should be caught by 'me' but as a fallback
+                    server_socket.sendto(f"You see yourself, {nickname}. You look great!".encode(), address)
+                else:
+                    target_nickname = client_nicknames[target_addr]
+                    server_socket.sendto(f"You see {target_nickname}. They look busy.".encode(), address)
             else:
                 server_socket.sendto(f"You don't see a {target_name} here.".encode(), address)
         else:
-            server_socket.sendto("Look at what? Usage: /lookat <item>".encode(), address)
+            server_socket.sendto("Look at what? Usage: /lookat <item or person>".encode(), address)
 
     elif command == '/sit':
         if args:
@@ -237,7 +274,7 @@ def handle_client_message(address, message, server_socket):
     elif command == '/help':
         help_text = """Commands:
 /look - See the room description, items, and exits.
-/lookat <item> - Look at an item to get its description.
+/lookat <item or person> - Look at an item or a person to get a description.
 /sit <item> - Sit on an item.
 /go <direction> - Move to another room.
 /emote <action> - Perform an action.
