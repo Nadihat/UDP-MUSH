@@ -11,62 +11,62 @@ client_locations = {}  # Maps address to room_id
 rooms = {
     'living_room': {
         'name': 'Living Room',
-        'description': 'You are in a cozy living room. A hallway leads east, a snowy path leads north, and a path through tall grass leads west.',
+        'description': 'Sunlight streams through a large bay window, illuminating a cozy living room. Dust motes dance in the golden rays. A comfortable-looking sofa invites you to relax, and a grand fireplace stands against the far wall, its mantlepiece adorned with curious trinkets. A hallway leads east into darkness, a heavy oak door leads north, and a worn path through tall grass is visible to the west.',
         'items': {
-            "a chair": "A simple wooden chair.",
-            "a table": "A sturdy wooden table.",
-            "a sofa": "A plush, comfortable-looking sofa."
+            "a chair": "A simple, yet elegant, wooden chair with a faded velvet cushion. It looks like it has seen many years of use.",
+            "a table": "A sturdy, dark wood table. Its surface is polished to a high shine and reflects the room's light.",
+            "a sofa": "A plush, oversized sofa with soft, inviting cushions. It looks like the perfect spot for a nap."
         },
         'sitting_users': {},  # Maps address to item name
         'exits': {'east': 'kitchen', 'north': 'snow_wonderland', 'west': 'prairie'}
     },
     'kitchen': {
         'name': 'Kitchen',
-        'description': 'You are in a small kitchen. The living room is to the west.',
+        'description': 'You find yourself in a spacious kitchen, filled with the faint, pleasant aroma of baked bread. Polished copper pots and pans hang from a rack overhead, gleaming in the dim light. The living room is to the west, from where you can hear the faint crackling of a fire.',
         'items': {
-            "a stove": "A modern electric stove.",
-            "a refrigerator": "A stainless steel refrigerator, humming softly."
+            "a stove": "A large, modern electric stove with a smooth, black ceramic top. It looks powerful and efficient.",
+            "a refrigerator": "A massive, stainless steel refrigerator. It hums a quiet, steady tune, promising delicious treasures within."
         },
         'sitting_users': {},
         'exits': {'west': 'living_room'}
     },
     'snow_wonderland': {
         'name': 'Snow Wonderland',
-        'description': 'You are in a magical snow wonderland. A path leads south to the living room and a snowy trail continues north.',
+        'description': 'You step into a breathtaking winter wonderland. The air is crisp and cold, and the ground is covered in a thick blanket of pristine, white snow. Towering ice sculptures glitter in the soft, magical light, and delicate snowflakes drift down from the sky. A path leads south back to the warmth of the living room, and a snowy trail continues north into the unknown.',
         'items': {
-            "a giant snowball": "It's a perfectly round, giant snowball. It looks heavy."
+            "a giant snowball": "A perfectly round, giant snowball, at least twice your height. It sparkles with a strange, inner light and feels surprisingly light to the touch."
         },
         'sitting_users': {},
         'exits': {'south': 'living_room', 'north': 'snowy_trail'}
     },
     'snowy_trail': {
         'name': 'Snowy Trail',
-        'description': 'You are on a narrow, snowy trail. The snow is deep here. The trail continues north to the sea and south to the wonderland.',
+        'description': 'You are on a narrow, winding trail, flanked by tall, snow-laden pine trees. The snow is deep here, muffling all sound and creating a sense of peaceful isolation. The trail continues north towards a distant, shimmering sea and south back to the magical wonderland.',
         'items': {},
         'sitting_users': {},
         'exits': {'south': 'snow_wonderland', 'north': 'icy_sea'}
     },
     'icy_sea': {
         'name': 'Icy Sea',
-        'description': 'You are standing on the shore of a vast, frozen sea. The water is dark and cold. A snowy trail leads south.',
+        'description': 'You have arrived at the shore of a vast, frozen sea. The ice stretches out to the horizon, a seemingly endless expanse of white and blue. The water beneath is dark and mysterious, and the air is filled with the sound of the wind whistling over the ice. A snowy trail leads south, away from the chilling beauty of the sea.',
         'items': {},
         'sitting_users': {},
         'exits': {'south': 'snowy_trail'}
     },
     'prairie': {
         'name': 'Tallgrass Prairie',
-        'description': 'You are in a vast tallgrass prairie. The grass sways gently in the breeze. A path leads east back to the living room. A faint trail goes north into a meadow.',
+        'description': 'You are standing in a vast tallgrass prairie, the golden blades swaying and rustling around you in the gentle breeze. The sun is warm on your face, and the air is filled with the sweet scent of the earth. A well-trodden path leads east, back to the comfort of the living room, while a faint trail to the north beckons you towards a sunny meadow.',
         'items': {
-            "a patch of wildflowers": "A beautiful patch of colorful wildflowers."
+            "a patch of wildflowers": "A vibrant patch of wildflowers, a riot of color in the sea of grass. Bees buzz lazily from one blossom to the next."
         },
         'sitting_users': {},
         'exits': {'east': 'living_room', 'north': 'sunny_meadow'}
     },
     'sunny_meadow': {
         'name': 'Sunny Meadow',
-        'description': 'You are in a sunny meadow filled with buzzing bees and butterflies. The tallgrass prairie is to the south.',
+        'description': 'You have entered a peaceful, sunny meadow, alive with the gentle buzzing of bees and the fluttering of colorful butterflies. The air is warm and fragrant with the scent of clover and daisies. The tallgrass prairie from which you came lies to the south.',
         'items': {
-            "a lone oak tree": "A majestic old oak tree provides some shade."
+            "a lone oak tree": "A majestic old oak tree stands in the center of the meadow, its sprawling branches providing a cool, shady respite from the sun."
         },
         'sitting_users': {},
         'exits': {'south': 'prairie'}
