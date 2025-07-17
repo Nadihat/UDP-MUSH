@@ -28,7 +28,7 @@ def main():
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as client_socket:
         # Get a nickname from the user
         nickname = input("Enter your nickname: ")
-        print(f"Welcome, {nickname}! Type 'exit' to quit.")
+        print(f"Welcome, {nickname}! Type '/exit' or '/quit' to disconnect.")
 
         # Start a separate thread for receiving messages
         receiver_thread = threading.Thread(target=receive_messages, args=(client_socket,))
@@ -41,7 +41,7 @@ def main():
         # Main loop for sending messages
         while True:
             message = input("> ")
-            if message.lower() == 'exit':
+            if message.lower() in ('/exit', '/quit', 'exit', 'quit'):
                 print("Disconnecting...")
                 # Let the server handle the exit message formatting
                 client_socket.sendto(f"/exit {nickname}".encode(), (SERVER_HOST, SERVER_PORT))

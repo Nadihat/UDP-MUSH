@@ -242,7 +242,7 @@ def handle_client_message(address, message, server_socket):
 /go <direction> - Move to another room.
 /emote <action> - Perform an action.
 /smile - Smile at everyone in the room.
-/exit - Disconnect from the server."""
+/exit or /quit - Disconnect from the server."""
         server_socket.sendto(help_text.encode(), address)
 
     elif command == '/emote':
@@ -253,9 +253,10 @@ def handle_client_message(address, message, server_socket):
             server_socket.sendto("Emote what? Usage: /emote <action>".encode(), address)
 
     elif command == '/smile':
+        server_socket.sendto("You smile. 😊".encode(), address)
         broadcast_message = f"--- {nickname} smiles. 😊 ---"
     
-    elif command == '/exit':
+    elif command in ('/exit', '/quit'):
         handle_disconnect(address, f"--- {nickname} has left the chat ---")
 
     else:
