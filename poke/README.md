@@ -5,6 +5,6 @@ On real usage, it has proven to be low-latency. I enjoy there's no "broken pipe"
 
 No reliability issues seen yet in testing. No disordered messages, jumbled letters and so forth.
 
-poke contains a Pokemon battling/exploration/etc engine combined to the MUSH parts. Pokemon is all rights reserved Nintendo/Gamefreak/Creatures.
+This directory contains a Pokemon battling/exploration/etc engine combined to the MUSH parts. Pokemon is all rights reserved Nintendo/Gamefreak/Creatures.
 
 Built with Gemini CLI.
