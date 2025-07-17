@@ -285,6 +285,7 @@ def handle_client_message(address, message, server_socket):
     elif command == '/emote':
         if args:
             action = " ".join(args)
+            server_socket.sendto(f"You {action}.".encode(), address)
             broadcast_message = f"--- {nickname} {action}. ---"
         else:
             server_socket.sendto("Emote what? Usage: /emote <action>".encode(), address)
