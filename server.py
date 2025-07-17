@@ -93,7 +93,7 @@ def main():
 
             except Exception as e:
                 print(f"An error occurred: {e}")
-                handle_disconnect(address, f"--- A user has disconnected unexpectedly. ---")
+                handle_disconnect(address, f"--- A user has disconnected unexpectedly. ---", server_socket)
 
 
 def handle_new_client(address, server_socket):
@@ -106,7 +106,7 @@ def handle_new_client(address, server_socket):
     welcome_msg = f"{room['description']}\nType /look to see what's around or /help for a list of commands."
     server_socket.sendto(welcome_msg.encode(), address)
 
-def handle_disconnect(address, broadcast_message):
+def handle_disconnect(address, broadcast_message, server_socket):
     """Handles a client disconnection."""
     if address in clients:
         current_room_id = client_locations.get(address)
@@ -118,20 +118,16 @@ def handle_disconnect(address, broadcast_message):
 
         clients.remove(address)
         print(f"Client {address} disconnected.")
-        broadcast_to_room(broadcast_message, current_room_id)
+        broadcast_to_room(broadcast_message, current_room_id, server_socket)
 
-def broadcast_to_room(message, room_id, exclude_address=None):
+def broadcast_to_room(message, room_id, server_socket, exclude_address=None):
     """Broadcasts a message to all clients in a specific room."""
     if not message or not room_id:
         return
         
     for addr, loc in client_locations.items():
         if loc == room_id and addr != exclude_address:
-            # This is where you would get the socket object for each client
-            # In this simple UDP server, we just use the main server socket
-            # In a real app, you'd look up the client's socket object
-            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as temp_socket:
-                temp_socket.sendto(message.encode(), addr)
+            server_socket.sendto(message.encode(), addr)
 
 
 def handle_client_message(address, message, server_socket):
@@ -154,7 +150,7 @@ def handle_client_message(address, message, server_socket):
         # Extract nickname from "--- <nickname> has joined the chat ---"
         nickname = message.split("--- ")[1].split(" has joined")[0]
         client_nicknames[address] = nickname
-        broadcast_to_room(message, current_room_id, exclude_address=address)
+        broadcast_to_room(message, current_room_id, server_socket, exclude_address=address)
         return
 
     if command.startswith('/'):
@@ -164,8 +160,8 @@ def handle_client_message(address, message, server_socket):
         if address not in client_nicknames:
              client_nicknames[address] = nickname
     else:
-        # This is a regular chat message, broadcast it directly
-        broadcast_to_room(message, current_room_id)
+        # This is a regular chat message, broadcast it to everyone in the room
+        broadcast_to_room(message, current_room_id, server_socket)
         return
 
     broadcast_message = ""
@@ -251,7 +247,7 @@ def handle_client_message(address, message, server_socket):
                 
                 # Announce departure
                 departure_msg = f"--- {nickname} leaves, heading {direction}. ---"
-                broadcast_to_room(departure_msg, current_room_id, exclude_address=address)
+                broadcast_to_room(departure_msg, current_room_id, server_socket, exclude_address=address)
 
                 # Change room
                 client_locations[address] = new_room_id
@@ -259,7 +255,7 @@ def handle_client_message(address, message, server_socket):
 
                 # Announce arrival
                 arrival_msg = f"--- {nickname} arrives. ---"
-                broadcast_to_room(arrival_msg, new_room_id, exclude_address=address)
+                broadcast_to_room(arrival_msg, new_room_id, server_socket, exclude_address=address)
 
                 # Describe new room to the user
                 server_socket.sendto(new_room['description'].encode(), address)
@@ -295,7 +291,7 @@ def handle_client_message(address, message, server_socket):
         broadcast_message = f"--- {nickname} smiles. 😊 ---"
     
     elif command in ('/exit', '/quit'):
-        handle_disconnect(address, f"--- {nickname} has left the chat ---")
+        handle_disconnect(address, f"--- {nickname} has left the chat ---", server_socket)
 
     else:
         # It's a chat message that starts with a '/', but is not a recognized command.
@@ -304,7 +300,7 @@ def handle_client_message(address, message, server_socket):
 
 
     if broadcast_message:
-        broadcast_to_room(broadcast_message, current_room_id, exclude_address=address)
+        broadcast_to_room(broadcast_message, current_room_id, server_socket, exclude_address=address)
 
 
 if __name__ == "__main__":
