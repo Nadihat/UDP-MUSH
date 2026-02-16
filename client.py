@@ -42,15 +42,20 @@ def main():
             if message.lower() in ('/exit', '/quit', 'exit', 'quit'):
                 print("Disconnecting...")
                 # Let the server handle the exit message formatting
-                client_socket.sendto(f"/exit {nickname}".encode(), (SERVER_HOST, SERVER_PORT))
+                client_socket.sendto(f"exit {nickname}".encode(), (SERVER_HOST, SERVER_PORT))
                 break
 
             # Send the raw message to the server
-            if message.startswith('/'):
+            parts = message.split(' ', 1)
+            first_word = parts[0].lower() if parts else ""
+            
+            # List of commands that the server recognizes
+            known_commands = {'look', 'l', 'sit', 'map', 'help', 'emote', 'smile', 'n', 'e', 's', 'w', 'north', 'south', 'east', 'west'}
+
+            if first_word in known_commands:
                 # For commands, we send the command and nickname, and any arguments
-                # e.g., /sit chair -> becomes "/sit chair nickname"
-                parts = message.split(' ', 1)
-                command = parts[0]
+                # e.g., sit chair -> becomes "sit chair nickname"
+                command = first_word
                 args = parts[1] if len(parts) > 1 else ""
                 full_message = f"{command} {args} {nickname}"
             else:
