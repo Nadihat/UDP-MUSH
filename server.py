@@ -69,6 +69,48 @@ def broadcast_to_room(message, room_id, server_socket, exclude_address=None):
         if loc == room_id and addr != exclude_address:
             server_socket.sendto(message.encode(), addr)
 
+def get_map_ascii(rooms, client_location, width, height):
+    """Generates an ASCII representation of the map."""
+    # Determine the visible area around the player
+    player_x, player_y = map(int, client_location.split('_'))
+    
+    # Define a smaller view radius
+    view_radius_x = 5
+    view_radius_y = 3
+
+    min_x = max(0, player_x - view_radius_x)
+    max_x = min(width - 1, player_x + view_radius_x)
+    min_y = max(0, player_y - view_radius_y)
+    max_y = min(height - 1, player_y + view_radius_y)
+
+    map_str = "Map:\n"
+    for y in range(min_y, max_y + 1):
+        row = ""
+        for x in range(min_x, max_x + 1):
+            room_id = f"{x}_{y}"
+            if room_id == client_location:
+                row += "P"  # Player's position
+            elif room_id in rooms:
+                # Get biome from room name (simplified for ASCII representation)
+                name = rooms[room_id]['name']
+                if "Water" in name:
+                    row += "~"
+                elif "Sandy" in name:
+                    row += "."
+                elif "Grassland" in name:
+                    row += '"'
+                elif "Forest" in name:
+                    row += "T"
+                elif "Rocky" in name:
+                    row += "#"
+                else:
+                    row += "?" # Unknown biome
+            else:
+                row += " " # Should not happen if rooms cover the whole grid
+        map_str += row + "\n"
+    return map_str
+
+
 
 def handle_client_message(address, message, server_socket):
     """Processes a message from a client."""
@@ -185,7 +227,15 @@ def handle_client_message(address, message, server_socket):
                 server_socket.sendto(f"You sit on {target_item}.".encode(), address)
                 broadcast_message = f"--- {nickname} sits on {target_item}. ---"
         else:
-            server_socket.sendto("Sit on what? Usage: /sit <item>".encode(), address)
+            # Sit on the ground
+            target_item = "the ground"
+            # Stand up from any other item
+            if address in current_room['sitting_users']:
+                del current_room['sitting_users'][address]
+            
+            current_room['sitting_users'][address] = target_item
+            server_socket.sendto(f"You sit on {target_item}.".encode(), address)
+            broadcast_message = f"--- {nickname} sits on {target_item}. ---"
 
     elif command == '/go':
         if args:
@@ -215,12 +265,17 @@ def handle_client_message(address, message, server_socket):
         else:
             server_socket.sendto("Go where? Usage: /go <direction>".encode(), address)
     
+    elif command == '/map':
+        map_representation = get_map_ascii(rooms, current_room_id, 32, 24)
+        server_socket.sendto(map_representation.encode(), address)
+
     elif command == '/help':
         help_text = """Commands:
 /look - See the room description, items, and exits.
 /lookat <item or person> - Look at an item or a person to get a description.
-/sit <item> - Sit on an item.
+/sit [item] - Sit on an item, or on the ground if no item is specified.
 /go <direction> - Move to another room. (n, s, e, w shortcuts work)
+/map - Display a small ASCII map of your surroundings.
 /emote <action> - Perform an action.
 /smile - Smile at everyone in the room.
 /exit or /quit - Disconnect from the server."""

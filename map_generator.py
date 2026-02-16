@@ -92,6 +92,11 @@ def generate_rooms(width=32, height=24):
                 name = f"Sandy Beach ({x}, {y})"
                 description = "Warm sand shifts beneath your feet. The sound of waves is near."
                 biome = "sand"
+            elif val < 0.2:
+                name = f"Open Grassland ({x}, {y})"
+                description = "You are in an open grassland. A gentle breeze rustles the tall grass."
+                items = {}
+                biome = "grassland"
             elif val < 0.4:
                 name = f"Dense Forest ({x}, {y})"
                 description = "Tall trees block out most of the light. The air smells of pine and earth."
