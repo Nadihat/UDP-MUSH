@@ -85,20 +85,20 @@ def generate_rooms(width=32, height=24):
             items = {}
             
             if val < -0.2:
-                name = "Dark Water"
+                name = f"Dark Water ({x}, {y})"
                 description = "You are treading in dark, cold water. The current is strong here."
                 biome = "water"
             elif val < 0.0:
-                name = "Sandy Beach"
+                name = f"Sandy Beach ({x}, {y})"
                 description = "Warm sand shifts beneath your feet. The sound of waves is near."
                 biome = "sand"
             elif val < 0.4:
-                name = "Dense Forest"
+                name = f"Dense Forest ({x}, {y})"
                 description = "Tall trees block out most of the light. The air smells of pine and earth."
                 items = {"a pinecone": "A sticky pinecone fallen from a tree."}
                 biome = "forest"
             else:
-                name = "Rocky Peak"
+                name = f"Rocky Peak ({x}, {y})"
                 description = "The air is thin and cold up here. Jagged rocks surround you."
                 biome = "mountain"
                 
