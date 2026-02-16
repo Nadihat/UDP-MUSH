@@ -93,16 +93,24 @@ def handle_client_message(address, message, server_socket):
         broadcast_to_room(message, current_room_id, server_socket, exclude_address=address)
         return
 
-    if command.startswith('/'):
-        # For commands, the nickname is the last element
-        nickname = parts[-1]
-        args = parts[1:-1]
-        if address not in client_nicknames:
-             client_nicknames[address] = nickname
-    else:
-        # This is a regular chat message, broadcast it to everyone in the room
-        broadcast_to_room(message, current_room_id, server_socket)
-        return
+    is_command = command.startswith('/')
+    nickname = parts[-1] if len(parts) > 1 else ""
+    args = parts[1:-1] if len(parts) > 2 else []
+
+    if not is_command:
+        # Directional shorthands (n, e, s, w)
+        direction_shorthands = {'n': 'north', 'e': 'east', 's': 'south', 'w': 'west'}
+        if command in direction_shorthands:
+            is_command = True
+            args = [direction_shorthands[command]]
+            command = '/go'
+        else:
+            # This is a regular chat message, broadcast it to everyone in the room
+            broadcast_to_room(message, current_room_id, server_socket)
+            return
+
+    if is_command and address not in client_nicknames and nickname:
+        client_nicknames[address] = nickname
 
     broadcast_message = ""
 
@@ -212,7 +220,7 @@ def handle_client_message(address, message, server_socket):
 /look - See the room description, items, and exits.
 /lookat <item or person> - Look at an item or a person to get a description.
 /sit <item> - Sit on an item.
-/go <direction> - Move to another room.
+/go <direction> - Move to another room. (n, s, e, w shortcuts work)
 /emote <action> - Perform an action.
 /smile - Smile at everyone in the room.
 /exit or /quit - Disconnect from the server."""

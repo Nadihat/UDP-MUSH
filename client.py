@@ -1,11 +1,9 @@
-
-
 import socket
 import threading
 
 # Server configuration
 SERVER_HOST = '127.0.0.1'
-SERVER_PORT = 12345
+SERVER_PORT = 60025
 
 def receive_messages(client_socket):
     """Target function for the receiving thread."""
