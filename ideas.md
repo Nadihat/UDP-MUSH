@@ -4,12 +4,12 @@ This document outlines potential features and improvements for the multi-user ch
 
 ## Core Gameplay Mechanics
 - **Inventory System:**
-    - `/take <item>`: Allow users to pick up items from a room and add them to a personal inventory.
-    - `/drop <item>`: Allow users to drop items from their inventory into the current room.
-    - `/inventory`: Display the items the user is currently carrying.
+    - `take <item>`: Allow users to pick up items from a room and add them to a personal inventory.
+    - `drop <item>`: Allow users to drop items from their inventory into the current room.
+    - `inventory (i)`: Display the items the user is currently carrying.
 - **Item Interaction:**
-    - `/use <item>`: Implement a system for using items, either on their own or on other items/features in the room (e.g., `/use key on door`).
-    - `/give <player> <item>`: Allow users to give items from their inventory to another player in the same room.
+    - `use <item>`: Implement a system for using items, either on their own or on other items/features in the room (e.g., `/use key on door`).
+    - `give <player> <item>`: Allow users to give items from their inventory to another player in the same room.
 - **Dynamic World:**
     - **Puzzles:** Introduce simple puzzles, like locked doors that require a key found in another room.
     - **Movable Items:** Allow certain items to be pushed or pulled.
@@ -17,12 +17,12 @@ This document outlines potential features and improvements for the multi-user ch
 
 ## Social and Communication
 - **Enhanced Chat:**
-    - `/whisper <player> <message>`: Send a private message to a specific user, regardless of the room they are in.
-    - `/emote <action>`: Allow users to perform custom actions (e.g., `/emote waves.` -> "--- User waves. ---").
-    - `/yell <message>`: Shout a message that can be heard in adjacent rooms.
+    - `whisper <player> <message>`: Send a private message to a specific user, regardless of the room they are in.
+    - `emote <action>`: Allow users to perform custom actions (e.g., `/emote waves.` -> "--- User waves. ---").
+    - `yell <message>`: Shout a message that can be heard in adjacent rooms.
 - **User Profiles:**
-    - `/set-description <description>`: Allow users to set a personal description that others can see.
-    - `/examine <player>`: Look at another player to see their description.
+    - `set-description <description>`: Allow users to set a personal description that others can see.
+    - `examine <player>`: Look at another player to see their description.
 
 ## World and Content
 - **More Rooms and Areas:**
