@@ -43,3 +43,14 @@ This document outlines potential features and improvements for the multi-user ch
     - A simple system for users to register a username and password.
 - **Configuration File:**
     - Move server settings (HOST, PORT) and world data (rooms, items) into a separate configuration file (e.g., a JSON or YAML file) to make it easier to modify the world without changing the code.
+
+## Advanced Gameplay & Economy
+- **Combat System:**
+    - `attack <target>`: Basic combat mechanics to fight NPCs or other players (PvP).
+    - Health points (HP) and damage stats for weapons.
+- **Economy:**
+    - **Currency:** Introduce gold or coins dropped by monsters or found in the world.
+    - **Shops:** NPC shopkeepers where players can buy and sell items.
+- **Skills and Progression:**
+    - Experience points (XP) and leveling up.
+    - Skill trees (e.g., mining, crafting, swordsmanship).
