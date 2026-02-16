@@ -3,7 +3,7 @@ from map_generator import generate_rooms
 
 # Server configuration
 HOST = '127.0.0.1'
-PORT = 12345
+PORT = 60025
 
 # Game state
 clients = set()
