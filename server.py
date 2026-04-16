@@ -35,7 +35,7 @@ flavor_texts = [
     "A spider diligently spins its web.",
     "You see a hawk circling high above.",
     "The scent of damp earth fills the air.",
-    "A cool breeze sends a shiver down your spine.",
+    "A cool breeze sends a shiver down your body.",
     "You hear the rustling of a small creature in the undergrowth.",
 ]
 
