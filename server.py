@@ -14,7 +14,7 @@ client_locations = {}  # Maps address to room_id
 
 # Generate map
 rooms = generate_rooms(32, 24)
-STARTING_ROOM = '16_12' # Center of map
+STARTING_ROOM = '16_20'
 
 flavor_texts = [
     "A gentle breeze whispers through the leaves.",
